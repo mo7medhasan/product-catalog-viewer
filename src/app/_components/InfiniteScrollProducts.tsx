@@ -88,7 +88,7 @@ export default function InfiniteScrollProducts({
         {hasMore ? (
           <div
             ref={lastProductRef}
-            className="product-card bg-gray-500/30 relative h-full  rounded-2xl  animate-ping "
+            className="product-card bg-gray-500/30 relative h-full  rounded-2xl  animate-bounce "
           />
         ) : null}
       </div>
