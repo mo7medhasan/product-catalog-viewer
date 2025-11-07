@@ -1,49 +1,58 @@
 # Product Catalog Viewer
 
-A modern **Next.js 16** application for browsing products, viewing detailed product pages
+A fully–typed **Next.js 16** + **TypeScript** application for browsing, searching, filtering, and viewing products with support for infinite‑scroll pagination and a typed API layer.
 
-This project demonstrates clean architecture, reusable components, server actions, and an organized folder structure suitable for scalable frontend applications.
+This project is built with clean, scalable architecture and focuses on performance, reusability, and developer experience.
 
 ---
 
 ## 🚀 Features
 
-### ✅ Product Catalog
+### ✅ Product Catalog (Home Page `/`)
 
-* Display a paginated or infinite scroll list of products.
-* Product cards with price, image, rating, badges, and actions.
+* Infinite-scroll pagination using **Intersection Observer**.
+* Automatically loads the next page of products when the user scrolls down.
+* No page refresh or manual page navigation.
+* Fully responsive grid layout.
+* Reusable `ProductCard` component.
 
-### ✅ Product Details Page
+### ✅ Search & Filter
 
-* Gallery, specs, description, reviews, tags, and dynamic route handling.
-* SEO-friendly dynamic `[id]` pages.
+* Search bar integrated with the DummyJSON API (`/products/search?q=`).
+* Client-side filtering utilities (price, brand, rating – extendable).
+* Clean and debounced search behavior.
 
-###
+### ✅ Product Details Page (`/product/[id]`)
 
-### ✅ Built with Modern Tools
+* Server-side data fetching for product details.
+* Detailed layout: gallery, header, price, description, rating, reviews, tags.
+* Smooth navigation between sections within the page.
+* Loading + error states.
+* **Delete Product** functionality using:
 
-* **Next.js 16 App Router**
-* **React 19**
-* **Tailwind CSS v4**
-* **Lucide-react Icons**
-* **TypeScript**
-* **Jest** for testing
-* Clean folder structure
-* Reusable shared components
+  * Confirmation dialog
+  * API DELETE request
+  * Redirect after deletion
+
+### ✅ Clean Architecture
+
+* Modular folder structure
+* Reusable shared UI components
+* `services/` layer for API logic
+* `types/` folder for all shared interfaces
+* `utils/` for helpers (storage, fetchers, formatters)
 
 ---
 
 ## 📁 Folder Structure
 
-Below is the project structure with description for each part:
-
 ```
 src/
   app/
     _components/
-      InfiniteScrollProducts.tsx       # Shared infinite scroll logic
+      InfiniteScrollProducts.tsx     # Infinite scroll using IntersectionObserver
     actions/
-      deleteProduct.ts                 # Server action for deleting products
+      deleteProduct.ts               # Server action (DELETE request)
     product/
       [id]/
         _components/
@@ -58,10 +67,10 @@ src/
         error.tsx
         loading.tsx
         not-found.tsx
-        page.tsx                       # Dynamic product details page
+        page.tsx                     # Product Details Page (SSR)
     globals.css
     layout.tsx
-    page.tsx                           # Home page showing product list
+    page.tsx                         # Home Page (List + Infinite Scroll + Search)
 
   components/
     BackButton.tsx
@@ -72,24 +81,45 @@ src/
     SubmitButton.tsx
 
   services/
-    product.api.ts                     # API calls
+    product.api.ts                   # All API calls (typed)
 
   types/
-    product.types.ts                   # Shared TypeScript types
+    product.types.ts                 # Full product interfaces & reusable types
 
   utils/
-    ...                                # Helper functions
+    storage.ts                       # Local/session storage handlers
+    observer.ts                      # IntersectionObserver utils
+    fetcher.ts                       # API fetch helpers
 
-.env                                    # Environment variables
-next.config.js                           # Next.js config
+.env
+next.config.js
 package.json
 ```
 
 ---
 
-## 📦 Dependencies
+## 🔄 Infinite Scroll Pagination
 
-### **Main dependencies**
+This project uses **Intersection Observer** instead of button-based pagination.
+
+### ✅ How it works:
+
+1. A reference element ("sentinel") is placed at the bottom of the product list.
+2. When the user scrolls and this element becomes visible:
+
+   * A new request to `/products?limit=...&skip=...` is fired.
+3. The new page of products is appended to the existing list.
+4. The UI re-renders smoothly without jumping or refreshing.
+
+✅ Efficient
+✅ Native browser API (no heavy libraries)
+✅ Smooth UX
+
+---
+
+## 📦 Packages Used
+
+### Dependencies
 
 ```
 next: 16.0.1
@@ -98,21 +128,27 @@ react-dom: 19.2.0
 lucide-react: ^0.552.0
 ```
 
-### **Dev dependencies**
+### Dev Dependencies
 
 ```
-TypeScript: ^5
-TailwindCSS v4
-Jest: ^30
-ESLint: ^9
+typescript: ^5
+tailwindcss: ^4
+jest: ^30
+eslint: ^9
+@types/* packages
 babel-plugin-react-compiler
 ```
 
+### Why these packages?
+
+* **Next.js 16** → Server Components, App Router, better caching.
+* **Tailwind CSS v4** → Fast styling, responsive design.
+* **Jest** → Unit testing for components & utils.
+* **Lucide-react** → Lightweight icon set.
+
 ---
 
-## ⚙️ Configuration
-
-### ✅ Environment Variables
+## 🔧 Configuration
 
 Create a `.env` file:
 
@@ -120,27 +156,29 @@ Create a `.env` file:
 BASE_URL=https://dummyjson.com/products
 ```
 
+---
+
 ## ▶️ Getting Started
 
-### 1. Install dependencies
+### Install dependencies
 
 ```
 npm install
 ```
 
-### 2. Run development server
+### Run development
 
 ```
 npm run dev
 ```
 
-### 3. Build for production
+### Build for production
 
 ```
 npm run build
 ```
 
-### 4. Start production server
+### Start production server
 
 ```
 npm start
@@ -150,19 +188,43 @@ npm start
 
 ## ✅ Testing
 
-Run unit tests using Jest:
-
 ```
 npm run test
 ```
 
+Tests cover:
+
+* Storage helpers
+* Product API service
+* Reusable UI components
+
 ---
 
-## 📝 Roadmap
+## 🧠 Design & Code Decisions
 
-* ✅ Improve accessibility
-* ✅ Add pagination option
-* 🔲 Add filtering & searching
+### ✅ Why Infinite Scroll?
+
+* Better UX for large product lists
+* No manual pagination
+* Works smoothly with IntersectionObserver
+
+### ✅ Why Server Actions for Delete Product?
+
+* Safer API calls
+* Built-in revalidation and redirect features
+* Clean code separation
+
+---
+
+## ⏳ If I Had More Time
+
+* Add advanced filters (price range, category, rating)
+* Add to Cart and Add to Wishlist Items stored in **LocalStorage**
+* Add product sorting (price, popularity)
+* Add caching with React Query or SWR
+* Improve API error logging
+* Write more unit tests & integration tests
+* Add authentication + protected actions
 
 ---
 
