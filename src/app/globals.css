@@ -11,6 +11,7 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
+
 /* 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -32,8 +33,26 @@ body {
 
 @media (min-width: 1330px) {
   .product-card {
-      aspect-ratio: 2.2/3.5;
+    aspect-ratio: 2.2/3.5;
 
-  width: clamp(350px, 20%, 450px);
+    width: clamp(350px, 20%, 450px);
   }
+}
+
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #2563eb, #7c3aed);
 }

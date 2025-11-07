@@ -1,5 +1,22 @@
-import { DeleteProductState, ProductDetail } from "@/types/product.types";
+import {  ProductDetail } from "@/types/product.types";
 const BASE_URL = process.env.BASE_URL || "https://dummyjson.com/products";
+
+
+export const getProducts = async () => {
+  const response = await fetch(`${BASE_URL}`);
+  const data = await response.json();
+  return data;
+}
+
+
+export const getProductsWithSearch = async ({search}:{search:string}) => {
+
+  const response = await fetch(`${BASE_URL}/search?q=${search}`);
+  const data = await response.json();
+  return data;
+}
+
+
 export const getProductById = async (
   id: string
 ): Promise<ProductDetail | null> => {
