@@ -1,6 +1,6 @@
 
 import Link from 'next/link';
-import { PackageX, Home, Search } from 'lucide-react';
+import { PackageX, Home } from 'lucide-react';
 
 export default function ProductNotFound() {
   return (
