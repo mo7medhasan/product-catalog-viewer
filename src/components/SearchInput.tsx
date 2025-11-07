@@ -29,7 +29,7 @@ export default function SearchInput() {
       startTransition(async () => {
         if (activeTab === "results") {
           try {
-            const data = await getProductsWithSearch({ search: textSearch });
+            const data = await getProductsWithSearch({ search: textSearch, limit: 5 });
             setResults(data.products);
             router.push("/");
           } catch (error) {

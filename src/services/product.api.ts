@@ -1,21 +1,33 @@
-import {  ProductDetail } from "@/types/product.types";
+import { ProductDetail } from "@/types/product.types";
+
 const BASE_URL = process.env.BASE_URL || "https://dummyjson.com/products";
 
-
-export const getProducts = async () => {
-  const response = await fetch(`${BASE_URL}`);
-  const data = await response.json();
-  return data;
+interface GetProductsParams {
+  limit?: number;
+  skip?: number;
 }
 
-
-export const getProductsWithSearch = async ({search}:{search:string}) => {
-
-  const response = await fetch(`${BASE_URL}/search?q=${search}`);
+export const getProducts = async ({ limit = 6, skip = 0 }: GetProductsParams = {}) => {
+  const response = await fetch(`${BASE_URL}?limit=${limit}&skip=${skip}`);
   const data = await response.json();
   return data;
-}
+};
 
+export const getProductsWithSearch = async ({
+  search,
+  limit = 6,
+  skip = 0,
+}: {
+  search: string;
+  limit?: number;
+  skip?: number;
+}) => {
+  const response = await fetch(
+    `${BASE_URL}/search?q=${search}&limit=${limit}&skip=${skip}`
+  );
+  const data = await response.json();
+  return data;
+};
 
 export const getProductById = async (
   id: string
@@ -39,6 +51,7 @@ export const getProductById = async (
     throw error;
   }
 };
+
 export const deleteProductById = async (id: string): Promise<boolean> => {
   try {
     const response = await fetch(`${BASE_URL}/${id}`, {
