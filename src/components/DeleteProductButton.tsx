@@ -63,9 +63,9 @@ export function DeleteProductButton({ productId }: DeleteProductButtonProps) {
       <dialog
         ref={dialogRef}
         onClick={handleBackdropClick}
-        className="backdrop:bg-black/40 backdrop:backdrop-blur-sm p-0 rounded-xl "
+        className="backdrop:bg-black/40 backdrop:backdrop-blur-sm p-0 rounded-xl  "
       >
-        <div className="modal-box bg-white rounded-2xl shadow-2xl p-6 sm:p-8 border border-gray-200/20 max-w-md w-full">
+        <div className="modal-box bg-white rounded-2xl shadow-2xl p-6 sm:p-8 border border-gray-200/20 max-w-md w-full fixed! left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 ">
           <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-r from-red-500 to-red-600 shadow-lg shadow-red-500/40 mb-6">
             <AlertTriangle className="h-8 w-8 text-white" />
           </div>
