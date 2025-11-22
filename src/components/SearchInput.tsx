@@ -1,51 +1,54 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { Search, Filter, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getProductsWithSearch } from "@/services/product.api";
 import { Product } from "@/types/product.types";
-
+import { useDebounce } from "@/hooks/useDebounce";
 
 export default function SearchInput() {
   const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 500); // ← Debounce
   const [results, setResults] = useState<Product[]>([]);
   const [activeTab, setActiveTab] = useState<"results" | "filters">("results");
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
-
-  async function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
-    try {
-      const q = e.target.value;
-      setQuery(q);
-
-      const textSearch = q.trim();
-      if (textSearch.length === 0) {
+  
+  
+useEffect(() => {
+  // Wrap all state updates inside a microtask (async)
+  Promise.resolve().then(() => {
+    if (debouncedQuery.trim() === "") {
+      startTransition(() => {
         setResults([]);
         router.push("/");
-        return;
-      }
-      startTransition(async () => {
+      });
+      return;
+    }
+
+    startTransition(async () => {
+      try {
         if (activeTab === "results") {
-          try {
-            const data = await getProductsWithSearch({ search: textSearch, limit: 5 });
-            setResults(data.products);
-            router.push("/");
-          } catch (error) {
-            console.error("Error fetching products:", error);
-            setResults([]);
-          }
+          const data = await getProductsWithSearch({
+            search: debouncedQuery,
+            limit: 5,
+          });
+          setResults(data.products);
+          router.push("/");
         } else {
           setResults([]);
-
-          router.push(`/?q=${encodeURIComponent(textSearch)}`);
+          router.push(`/?q=${encodeURIComponent(debouncedQuery)}`);
         }
-      });
-    } catch (error) {
-      console.error("Error during search:", error);
-    }
-  }
+      } catch (e) {
+        console.error(e);
+        setResults([]);
+      }
+    });
+  });
+}, [debouncedQuery, activeTab]);
+
 
   return (
     <div className="mx-auto space-y-4 relative">
@@ -58,9 +61,9 @@ export default function SearchInput() {
           <input
             type="text"
             value={query}
-            onChange={handleInput}
+            onChange={(e) => setQuery(e.target.value)}
             placeholder="Search products..."
-            className="w-full rounded-2xl border border-gray-300 bg-white pl-10 pr-10 py-2 text-sm shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+            className="w-full rounded-2xl border border-gray-300 bg-white pl-10 pr-10 py-2 text-sm shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
           {isPending && (
             <Loader2
@@ -72,9 +75,9 @@ export default function SearchInput() {
 
         <div className="flex items-center gap-2">
           <button
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-full transition-all text-sm font-medium ${
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
               activeTab === "results"
-                ? "bg-blue-500 text-white shadow-sm"
+                ? "bg-blue-500 text-white"
                 : "bg-gray-100 text-gray-600 hover:bg-blue-400 hover:text-white"
             }`}
             onClick={() => setActiveTab("results")}
@@ -82,10 +85,11 @@ export default function SearchInput() {
             <Search size={14} />
             <span>Results</span>
           </button>
+
           <button
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-full transition-all text-sm font-medium ${
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
               activeTab === "filters"
-                ? "bg-blue-500 text-white shadow-sm"
+                ? "bg-blue-500 text-white"
                 : "bg-gray-100 text-gray-600 hover:bg-blue-400 hover:text-white"
             }`}
             onClick={() => setActiveTab("filters")}
@@ -97,7 +101,7 @@ export default function SearchInput() {
       </div>
 
       {activeTab === "results" && query.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 min-h-[120px] absolute top-10 w-full max-w-md z-50">
+        <div className="bg-white rounded-2xl border p-4 shadow-sm absolute top-10 w-full max-w-md z-50">
           {isPending ? (
             <div className="flex items-center justify-center h-20">
               <p className="text-gray-400 text-sm">Searching...</p>
@@ -107,7 +111,7 @@ export default function SearchInput() {
               {results.map((item) => (
                 <li key={item.id}>
                   <Link
-                    href={`/product/${item.id}` || "#"}
+                    href={`/product/${item.id}`}
                     className="block px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-sm text-gray-800 font-medium"
                   >
                     {item.title}
