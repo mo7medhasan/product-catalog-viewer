@@ -23,7 +23,7 @@ useEffect(() => {
     if (debouncedQuery.trim() === "") {
       startTransition(() => {
         setResults([]);
-        router.push("/");
+        router.replace("/");
       });
       return;
     }
@@ -36,10 +36,10 @@ useEffect(() => {
             limit: 5,
           });
           setResults(data.products);
-          router.push("/");
+          router.replace("/");
         } else {
           setResults([]);
-          router.push(`/?q=${encodeURIComponent(debouncedQuery)}`);
+          router.replace(`/?q=${encodeURIComponent(debouncedQuery)}`);
         }
       } catch (e) {
         console.error(e);
