@@ -31,6 +31,52 @@ body {
 .product-card {
   aspect-ratio: 2/3.5;
   width: clamp(250px, 23%, 400px);
+
+}
+
+.Card-animated-bg {
+  position: relative;
+  inset: 0;
+  /* z-index: -10; */
+  background-color: #232323;
+  overflow: hidden;
+  border-radius: 15px;
+
+}
+
+.Card-animated-bg ::before {
+  content: "";
+  top: -25%;
+  transform: translateY(-50%);
+  z-index: -5;
+  inset-inline: auto;
+  position: absolute;
+  height: 300%;
+  width: 25%;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #0dfbff, #8550ff);
+  animation: rotateGradient 3s linear infinite;
+}
+
+@keyframes rotateGradient {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+
+}
+
+.Card-animated-bg::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  background-color: #ffffff;
+  z-index: -3;
+  border-radius: 15px;
+
 }
 
 @media (min-width: 1330px) {
